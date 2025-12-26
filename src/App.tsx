@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info, Volume2, VolumeX } from 'lucide-react';
+import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info, Volume2, VolumeX, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Board from './components/Board';
 import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
 import { useSound } from './hooks/useSound';
+import { useAchievements } from './hooks/useAchievements';
 import CreditsModal from './components/CreditsModal';
 import NameInputModal from './components/NameInputModal';
 import HighScoreModal from './components/HighScoreModal';
 import StatsModal from './components/StatsModal';
+import AchievementsModal from './components/AchievementsModal';
+import AchievementToast from './components/AchievementToast';
 import DailyChallengeBanner from './components/DailyChallengeBanner';
 import { Difficulty } from './types';
 
@@ -31,12 +34,21 @@ function App() {
   const [showCredits, setShowCredits] = useState(false);
   const [showHighScores, setShowHighScores] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
   const [minesRevealed, setMinesRevealed] = useState(false);
 
   // Custom hooks
   const { playerData, isLoaded, hasName, saveName, saveGameStats, saveDailyChallenge } = useLocalStorage();
   const { challenge } = useDailyChallenge();
   const { isEnabled: soundEnabled, toggle: toggleSound, play } = useSound();
+  const {
+    achievements,
+    totalUnlocked,
+    checkUnlock,
+    showToast,
+    hideToast,
+    unlockedAchievement,
+  } = useAchievements();
 
   // Timer effect
   useEffect(() => {
@@ -69,6 +81,15 @@ function App() {
       } else if (gameMode === 'daily' && !challenge.completed) {
         saveDailyChallenge(timer);
       }
+
+      // Check achievements
+      checkUnlock('game_won', {
+        difficulty,
+        time: timer,
+        currentStreak: playerData.stats.currentStreak + 1,
+        totalGames: playerData.stats.totalGames + 1,
+        perfectGame: gameState.flagsUsed === gameState.totalMines,
+      });
     } else if (gameState.status === 'lost') {
       setIsTimerRunning(false);
       play('explosion');
@@ -78,7 +99,7 @@ function App() {
         saveGameStats(false, difficulty, timer);
       }
     }
-  }, [gameState.status, gameMode, difficulty, timer, saveGameStats, saveDailyChallenge, challenge.completed, play]);
+  }, [gameState.status, gameMode, difficulty, timer, saveGameStats, saveDailyChallenge, challenge.completed, play, checkUnlock, playerData.stats.currentStreak, playerData.stats.totalGames, gameState.flagsUsed, gameState.totalMines]);
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -222,6 +243,25 @@ function App() {
           title="High Scores"
         >
           <Award className="w-6 h-6 text-white/80" />
+        </motion.button>
+
+        {/* Achievements Button */}
+        <motion.button
+          onClick={() => setShowAchievements(true)}
+          className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 rounded-lg p-3 transition-all duration-200 relative"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.475 }}
+          title="Achievements"
+        >
+          <Target className="w-6 h-6 text-purple-300" />
+          {totalUnlocked > 0 && (
+            <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              {totalUnlocked}
+            </span>
+          )}
         </motion.button>
 
         {/* Credits Button */}
@@ -520,6 +560,21 @@ function App() {
         isOpen={showStats}
         onClose={() => setShowStats(false)}
         stats={playerData.stats}
+      />
+
+      {/* Achievements Modal */}
+      <AchievementsModal
+        isOpen={showAchievements}
+        onClose={() => setShowAchievements(false)}
+        achievements={achievements}
+        totalUnlocked={totalUnlocked}
+      />
+
+      {/* Achievement Toast */}
+      <AchievementToast
+        achievement={unlockedAchievement}
+        show={showToast}
+        onHide={hideToast}
       />
     </div>
   );
