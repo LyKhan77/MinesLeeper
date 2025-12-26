@@ -69,16 +69,16 @@ const CreditsModal: React.FC<CreditsModalProps> = ({ isOpen, onClose }) => {
                   <h4 className="font-semibold text-yellow-300">The Origin Story</h4>
                 </div>
                 <p className="text-sm leading-relaxed">
-                  Suatu malam yang sunyi, saat dunia sedang lelap, saya tersadar akan sebuah pertanyaan eksistensial yang mengguncang fundasi kemanusiaan saya:
+                  One quiet night, when the world was asleep, I was struck by an existential question that shook the very foundation of my humanity:
                 </p>
                 <p className="text-sm font-semibold text-cyan-300 mt-2 italic">
-                  "Bagaimana jika Minesweeper... tapi aesthetic?"
+                  "What if Minesweeper... but aesthetic?"
                 </p>
                 <p className="text-sm leading-relaxed mt-2">
-                  Dari ketidakpedulian terhadap tidur yang sehat, lahirlah <span className="text-cyan-300 font-semibold">MinesLeeper</span>. Sebuah perayaan untuk jiwa-jiwa yang menolak tidur cepat demi mengeklik kotak-kotak misterius.
+                  From a complete disregard for healthy sleep habits, <span className="text-cyan-300 font-semibold">MinesLeeper</span> was born. A celebration for those souls who refuse to sleep early just to click mysterious boxes.
                 </p>
                 <p className="text-sm text-white/60 mt-2">
-                  (Filosofi: Kalau tidak bisa tidur, main saja.)
+                  (Philosophy: If you can't sleep, just play.)
                 </p>
               </motion.div>
 
@@ -91,7 +91,7 @@ const CreditsModal: React.FC<CreditsModalProps> = ({ isOpen, onClose }) => {
                   <h4 className="font-semibold text-purple-300">Why "MinesLeeper"?</h4>
                 </div>
                 <p className="text-sm leading-relaxed">
-                  Karena orang yang main Minesweeper sampai jam 3 pagi bukan "Miner" lagi. Dia adalah <span className="text-purple-300 font-semibold">"Leeper"</span> — seseorang yang seharusnya tidur tapi memilih menghitung bom.
+                  Because people who play Minesweeper until 3 AM aren't <span className="text-purple-300 font-semibold">"Miners"</span> anymore. They are <span className="text-purple-300 font-semibold">"Leeper"</span> — someone who SHOULD be sleeping but chooses to count bombs instead.
                 </p>
               </motion.div>
 
@@ -103,7 +103,7 @@ const CreditsModal: React.FC<CreditsModalProps> = ({ isOpen, onClose }) => {
                   Made with <span className="text-red-400">❤</span> and sleep deprivation
                 </p>
                 <p className="text-xs text-white/50 mt-1">
-                  © 2024 Kang Lee — No mines were harmed in the making
+                  © 2025 Kang Lee — No mines were harmed in the making
                 </p>
               </motion.div>
             </div>
