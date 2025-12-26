@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Flag, Bomb, Sparkles } from 'lucide-react';
+import { Flag, Bomb } from 'lucide-react';
 import { Cell as CellType } from '../utils/gameLogic';
 
 interface CellProps {
@@ -79,46 +79,32 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick 
   // Create sparkle effect on reveal
   useEffect(() => {
     if (cell.isRevealed && !cell.isMine && sparkleRef.current) {
-      const sparkles = Array.from({ length: 5 }, (_, i) => {
+      // Create sparkle particles
+      Array.from({ length: 5 }, (_, i) => {
         const angle = (Math.PI * 2 * i) / 5;
         const distance = 15;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
-        
-        return (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-cyan-300 rounded-full"
-            initial={{ 
-              x: 0, 
-              y: 0, 
-              opacity: 1,
-              scale: 1
-            }}
-            animate={{
-              x,
-              y,
-              opacity: 0,
-              scale: 0,
-            }}
-            transition={{
-              duration: 0.6,
-              ease: 'easeOut',
-            }}
-            style={{
-              left: '50%',
-              top: '50%',
-            }}
-          />
-        );
+
+        const sparkle = document.createElement('div');
+        sparkle.className = 'absolute w-1 h-1 bg-cyan-300 rounded-full';
+        sparkle.style.left = '50%';
+        sparkle.style.top = '50%';
+        sparkle.style.transform = 'translate(-50%, -50%)';
+
+        sparkleRef.current?.appendChild(sparkle);
+
+        // Animate using Web Animations API
+        sparkle.animate([
+          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0)`, opacity: 0 }
+        ], {
+          duration: 600,
+          easing: 'ease-out',
+        }).onfinish = () => sparkle.remove();
+
+        return sparkle;
       });
-      
-      // Temporarily render sparkles
-      setTimeout(() => {
-        if (sparkleRef.current) {
-          sparkleRef.current.innerHTML = '';
-        }
-      }, 600);
     }
   }, [cell.isRevealed, cell.isMine]);
 
