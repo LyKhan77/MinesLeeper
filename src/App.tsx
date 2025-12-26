@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info } from 'lucide-react';
+import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info, Volume2, VolumeX } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Board from './components/Board';
 import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
+import { useSound } from './hooks/useSound';
 import CreditsModal from './components/CreditsModal';
 import NameInputModal from './components/NameInputModal';
 import HighScoreModal from './components/HighScoreModal';
@@ -35,6 +36,7 @@ function App() {
   // Custom hooks
   const { playerData, isLoaded, hasName, saveName, saveGameStats, saveDailyChallenge } = useLocalStorage();
   const { challenge } = useDailyChallenge();
+  const { isEnabled: soundEnabled, toggle: toggleSound, play } = useSound();
 
   // Timer effect
   useEffect(() => {
@@ -59,6 +61,7 @@ function App() {
         colors: ['#22d3ee', '#34d399', '#f87171', '#c084fc', '#fbbf24'],
       });
       setIsTimerRunning(false);
+      play('victory');
 
       // Save stats
       if (gameMode === 'classic') {
@@ -68,12 +71,14 @@ function App() {
       }
     } else if (gameState.status === 'lost') {
       setIsTimerRunning(false);
+      play('explosion');
+      setTimeout(() => play('gameOver'), 500);
       // Save loss stats
       if (gameMode === 'classic') {
         saveGameStats(false, difficulty, timer);
       }
     }
-  }, [gameState.status, gameMode, difficulty, timer, saveGameStats, saveDailyChallenge, challenge.completed]);
+  }, [gameState.status, gameMode, difficulty, timer, saveGameStats, saveDailyChallenge, challenge.completed, play]);
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -102,20 +107,33 @@ function App() {
       if (prev.status === 'idle' && newState.status === 'playing') {
         setIsTimerRunning(true);
       }
+      if (newState.status !== prev.status || newState.board[row][col].isRevealed !== prev.board[row][col].isRevealed) {
+        play('click');
+      }
       return newState;
     });
-  }, []);
+  }, [play]);
 
   // Handle right click (flag)
   const handleCellRightClick = useCallback((row: number, col: number, e: React.MouseEvent) => {
     e.preventDefault();
-    setGameState((prev) => toggleFlag(prev, row, col));
-  }, []);
+    setGameState((prev) => {
+      const newState = toggleFlag(prev, row, col);
+      if (newState.board[row][col].isFlagged !== prev.board[row][col].isFlagged) {
+        play('flag');
+      }
+      return newState;
+    });
+  }, [play]);
 
   // Handle double click (chord)
   const handleCellDoubleClick = useCallback((row: number, col: number) => {
-    setGameState((prev) => chordReveal(prev, row, col));
-  }, []);
+    setGameState((prev) => {
+      const newState = chordReveal(prev, row, col);
+      play('chord');
+      return newState;
+    });
+  }, [play]);
 
   // Reveal all bombs
   const handleRevealBombs = useCallback(() => {
@@ -160,6 +178,24 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col items-center justify-center p-4">
       {/* Top Buttons */}
       <div className="fixed top-4 right-4 flex gap-2">
+        {/* Sound Toggle Button */}
+        <motion.button
+          onClick={toggleSound}
+          className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 rounded-lg p-3 transition-all duration-200"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.35 }}
+          title={soundEnabled ? "Sound On" : "Sound Off"}
+        >
+          {soundEnabled ? (
+            <Volume2 className="w-6 h-6 text-cyan-300" />
+          ) : (
+            <VolumeX className="w-6 h-6 text-white/40" />
+          )}
+        </motion.button>
+
         {/* Stats Button */}
         <motion.button
           onClick={() => setShowStats(true)}

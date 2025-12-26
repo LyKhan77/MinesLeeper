@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Flag, Bomb } from 'lucide-react';
+import { Flag, Bomb, Sparkles } from 'lucide-react';
 import { Cell as CellType } from '../utils/gameLogic';
 
 interface CellProps {
@@ -11,7 +11,7 @@ interface CellProps {
 }
 
 const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick }) => {
-  console.log('Cell render:', { row: cell.row, col: cell.col, isMine: cell.isMine, isRevealed: cell.isRevealed, isFlagged: cell.isFlagged, neighborCount: cell.neighborCount });
+  const sparkleRef = useRef<HTMLDivElement>(null);
   
   // Number color mapping with glow effects
   const getNumberColor = (num: number): string => {
@@ -29,10 +29,10 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick 
   };
 
   // Base cell styles
-  const baseClasses = 'w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-sm sm:text-base font-bold select-none transition-all duration-200 cursor-pointer';
+  const baseClasses = 'w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-sm sm:text-base font-bold select-none transition-all duration-200 cursor-pointer relative overflow-hidden';
 
   // Hidden cell styles (glass effect)
-  const hiddenClasses = 'bg-white/10 hover:bg-white/20 border border-white/5 hover:shadow-lg hover:shadow-white/10';
+  const hiddenClasses = 'bg-white/10 hover:bg-white/20 border border-white/5 hover:shadow-lg hover:shadow-white/10 hover:animate-pulse-glow';
 
   // Revealed cell styles (recessed look)
   const revealedClasses = 'bg-slate-800/50 border border-white/5 shadow-inner';
@@ -41,15 +41,20 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick 
   const flagVariants = {
     flag: {
       scale: [1, 0.8, 1],
-      transition: { duration: 0.15 }
+      rotate: [0, -5, 5, -5, 0],
+      transition: { duration: 0.3 }
     }
   };
 
   // Reveal animation
   const revealVariants = {
-    hidden: { scale: 0 },
+    hidden: { 
+      scale: 0,
+      rotate: -180,
+    },
     visible: { 
       scale: 1,
+      rotate: 0,
       transition: { 
         type: 'spring', 
         stiffness: 300, 
@@ -58,43 +63,145 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick 
     }
   };
 
+  // Explosion animation
+  const explosionVariants = {
+    explode: {
+      scale: [1, 1.5, 1],
+      backgroundColor: [
+        'rgba(239, 68, 68, 0)',
+        'rgba(239, 68, 68, 0.5)',
+        'rgba(239, 68, 68, 0)',
+      ],
+      transition: { duration: 0.5 }
+    }
+  };
+
+  // Create sparkle effect on reveal
+  useEffect(() => {
+    if (cell.isRevealed && !cell.isMine && sparkleRef.current) {
+      const sparkles = Array.from({ length: 5 }, (_, i) => {
+        const angle = (Math.PI * 2 * i) / 5;
+        const distance = 15;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        
+        return (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-300 rounded-full"
+            initial={{ 
+              x: 0, 
+              y: 0, 
+              opacity: 1,
+              scale: 1
+            }}
+            animate={{
+              x,
+              y,
+              opacity: 0,
+              scale: 0,
+            }}
+            transition={{
+              duration: 0.6,
+              ease: 'easeOut',
+            }}
+            style={{
+              left: '50%',
+              top: '50%',
+            }}
+          />
+        );
+      });
+      
+      // Temporarily render sparkles
+      setTimeout(() => {
+        if (sparkleRef.current) {
+          sparkleRef.current.innerHTML = '';
+        }
+      }, 600);
+    }
+  }, [cell.isRevealed, cell.isMine]);
+
   return (
     <motion.div
-      className={`${baseClasses} ${cell.isRevealed ? revealedClasses : hiddenClasses} ${cell.isFlagged ? 'cursor-pointer' : ''}`}
+      className={`${baseClasses} ${cell.isRevealed ? revealedClasses : hiddenClasses}`}
       onClick={onClick}
       onContextMenu={onRightClick}
       onDoubleClick={onDoubleClick}
       variants={cell.isRevealed ? revealVariants : undefined}
       initial={cell.isRevealed ? 'hidden' : undefined}
       animate={cell.isRevealed ? 'visible' : undefined}
-      whileHover={!cell.isRevealed ? { scale: 1.05 } : undefined}
+      whileHover={!cell.isRevealed ? { 
+        scale: 1.05,
+        boxShadow: '0 0 15px rgba(255, 255, 255, 0.3)'
+      } : undefined}
       whileTap={!cell.isRevealed ? { scale: 0.95 } : undefined}
     >
+      {/* Sparkle container */}
+      <div ref={sparkleRef} className="absolute inset-0 pointer-events-none" />
+
+      {/* Pulse glow effect for hidden cells */}
+      {!cell.isRevealed && !cell.isFlagged && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-purple-400/10 rounded"
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      )}
+
       {cell.isFlagged && !cell.isRevealed && (
         <motion.div
           variants={flagVariants}
           animate="flag"
           key={`flag-${cell.row}-${cell.col}-${cell.isFlagged}`}
         >
-          <Flag className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+          <Flag className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />
         </motion.div>
       )}
 
       {cell.isRevealed && cell.isMine && (
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="relative"
         >
-          <Bomb className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,1)]" />
+          <motion.div
+            className="absolute inset-0 bg-red-500/30 rounded"
+            variants={explosionVariants}
+            animate="explode"
+          />
+          <Bomb className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,1)] relative z-10" />
         </motion.div>
       )}
 
       {cell.isRevealed && !cell.isMine && cell.neighborCount > 0 && (
         <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          initial={{ scale: 0, rotate: -90 }}
+          animate={{ 
+            scale: 1, 
+            rotate: 0,
+            textShadow: [
+              '0 0 8px currentColor',
+              '0 0 16px currentColor',
+              '0 0 8px currentColor',
+            ]
+          }}
+          transition={{ 
+            type: 'spring', 
+            stiffness: 300, 
+            damping: 20,
+            textShadow: {
+              repeat: Infinity,
+              duration: 2,
+            }
+          }}
           className={getNumberColor(cell.neighborCount)}
         >
           {cell.neighborCount}
