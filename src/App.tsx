@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info, Volume2, VolumeX, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Board from './components/Board';
+import FlagModeButton from './components/FlagModeButton';
 import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
 import { useSound } from './hooks/useSound';
@@ -36,6 +37,7 @@ function App() {
   const [showStats, setShowStats] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [minesRevealed, setMinesRevealed] = useState(false);
+  const [flagMode, setFlagMode] = useState(false);
 
   // Custom hooks
   const { playerData, isLoaded, hasName, saveName, saveGameStats, saveDailyChallenge } = useLocalStorage();
@@ -526,8 +528,12 @@ function App() {
           onCellClick={handleCellClick}
           onCellRightClick={handleCellRightClick}
           onCellDoubleClick={handleCellDoubleClick}
+          flagMode={flagMode}
         />
       </div>
+
+      {/* Mobile Flag Mode Button */}
+      <FlagModeButton isActive={flagMode} onToggle={() => setFlagMode(!flagMode)} />
 
       {/* Instructions */}
       <motion.div

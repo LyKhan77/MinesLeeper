@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Flag, Bomb } from 'lucide-react';
 import { Cell as CellType } from '../utils/gameLogic';
@@ -8,10 +8,45 @@ interface CellProps {
   onClick: () => void;
   onRightClick: (e: React.MouseEvent) => void;
   onDoubleClick: () => void;
+  flagMode?: boolean; // Mobile flag mode
 }
 
-const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick }) => {
+const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick, flagMode = false }) => {
   const sparkleRef = useRef<HTMLDivElement>(null);
+  const [longPressTriggered, setLongPressTriggered] = useState(false);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle long press for mobile flagging
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (cell.isRevealed || flagMode) return;
+
+    longPressTimerRef.current = setTimeout(() => {
+      setLongPressTriggered(true);
+      onRightClick(e as any);
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Haptic feedback
+      }
+    }, 500); // 500ms long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (flagMode) {
+      onRightClick(e);
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
+    } else if (!longPressTriggered) {
+      onClick();
+    }
+    setLongPressTriggered(false);
+  };
   
   // Number color mapping with glow effects
   const getNumberColor = (num: number): string => {
@@ -110,10 +145,12 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick 
 
   return (
     <motion.div
-      className={`${baseClasses} ${cell.isRevealed ? revealedClasses : hiddenClasses}`}
-      onClick={onClick}
+      className={`${baseClasses} ${cell.isRevealed ? revealedClasses : hiddenClasses} ${flagMode && !cell.isRevealed ? 'ring-2 ring-yellow-400/50' : ''}`}
+      onClick={handleClick}
       onContextMenu={onRightClick}
       onDoubleClick={onDoubleClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       variants={cell.isRevealed ? revealVariants : undefined}
       initial={cell.isRevealed ? 'hidden' : undefined}
       animate={cell.isRevealed ? 'visible' : undefined}

@@ -8,9 +8,10 @@ interface BoardProps {
   onCellClick: (row: number, col: number) => void;
   onCellRightClick: (row: number, col: number, e: React.MouseEvent) => void;
   onCellDoubleClick: (row: number, col: number) => void;
+  flagMode?: boolean;
 }
 
-const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick, onCellDoubleClick }) => {
+const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick, onCellDoubleClick, flagMode = false }) => {
   const { board, rows, cols, status } = gameState;
   const prevStatusRef = useRef<GameStatus>(status);
 
@@ -112,6 +113,7 @@ const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick,
                     onClick={() => onCellClick(rowIndex, colIndex)}
                     onRightClick={(e) => onCellRightClick(rowIndex, colIndex, e)}
                     onDoubleClick={() => onCellDoubleClick(rowIndex, colIndex)}
+                    flagMode={flagMode}
                   />
                 </motion.div>
               ))
