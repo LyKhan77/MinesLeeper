@@ -214,5 +214,8 @@ export const getTimeUntilReset = (): number => {
 
 // Clear all data (for testing/reset)
 export const clearAllData = (): void => {
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY); // Remove player data, stats, high scores
+  localStorage.removeItem('minesleeper-achievements'); // Remove achievements
+  localStorage.removeItem('minesleeper-sound-enabled'); // Reset sound preference
+  localStorage.removeItem('minesleeper-sound-volume'); // Reset sound volume
 };

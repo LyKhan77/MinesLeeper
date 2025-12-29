@@ -20,7 +20,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats }) => {
   const winRate = stats.totalGames > 0 ? Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
 
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset all statistics? This will delete all your game data including high scores and achievements.')) {
+    if (window.confirm('Are you sure you want to reset all statistics? This will delete:\n\n• Game Statistics\n• High Scores\n• Achievements\n• Player Name\n• Sound Settings\n\nThis action cannot be undone!')) {
       clearAllData();
       window.location.reload(); // Reload to refresh data
     }
