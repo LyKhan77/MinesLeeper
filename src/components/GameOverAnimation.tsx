@@ -1,5 +1,4 @@
 // Retro Game Over Animation Component
-
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bomb } from 'lucide-react';
