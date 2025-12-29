@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, Info, Volume2, VolumeX, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
