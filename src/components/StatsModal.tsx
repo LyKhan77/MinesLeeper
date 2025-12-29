@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp, Trophy, Target, Flame, Gamepad2, RotateCcw, Trash2 } from 'lucide-react';
+import { X, TrendingUp, Trophy, Target, Flame, Gamepad2, Trash2 } from 'lucide-react';
 import { GameStats as GameStatsType, Difficulty } from '../types';
 import { formatTime, clearAllData } from '../utils/storage';
 
@@ -8,7 +8,6 @@ interface StatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   stats: GameStatsType;
-  onReset?: () => void;
 }
 
 const difficultyLabels: Record<Difficulty, string> = {
@@ -17,7 +16,7 @@ const difficultyLabels: Record<Difficulty, string> = {
   expert: 'Expert',
 };
 
-const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats, onReset }) => {
+const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats }) => {
   const winRate = stats.totalGames > 0 ? Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
 
   const handleReset = () => {
