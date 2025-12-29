@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Cell from './Cell';
 import { GameState, GameStatus } from '../utils/gameLogic';
-import { useWindowSize } from '../hooks/useWindowSize';
 
 interface BoardProps {
   gameState: GameState;
