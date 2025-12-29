@@ -445,6 +445,18 @@ function App() {
         </button>
       </motion.div>
 
+      {/* Landscape mode suggestion for Expert on mobile */}
+      {difficulty === 'expert' && (
+        <motion.div
+          className="bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm px-4 py-2 rounded-lg mb-4 text-center"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          📱 Tip: Expert mode plays best in landscape orientation
+        </motion.div>
+      )}
+
       {/* HUD */}
       <motion.div
         className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 mb-6 flex items-center justify-between gap-6 w-full max-w-2xl"

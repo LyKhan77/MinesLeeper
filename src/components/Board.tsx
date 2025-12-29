@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Cell from './Cell';
 import { GameState, GameStatus } from '../utils/gameLogic';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 interface BoardProps {
   gameState: GameState;
@@ -69,9 +70,9 @@ const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick,
 
   return (
     <motion.div
-      className={`bg-white/10 backdrop-blur-md border-2 rounded-2xl shadow-2xl p-4 sm:p-6 relative ${
-        status === 'lost' 
-          ? 'border-red-500/50 shadow-red-500/20' 
+      className={`bg-white/10 backdrop-blur-md border-2 rounded-2xl shadow-2xl p-4 sm:p-6 relative max-w-full custom-scrollbar ${
+        status === 'lost'
+          ? 'border-red-500/50 shadow-red-500/20'
           : status === 'won'
           ? 'border-yellow-500/50 shadow-yellow-500/20'
           : 'border-white/30 shadow-black/30'
@@ -86,10 +87,17 @@ const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick,
         animate={getBoardAnimation()}
         variants={status === 'won' ? victoryVariants : shakeVariants}
       >
-        <div 
+        {/* Scroll hint for large boards */}
+        {cols > 12 && (
+          <div className="text-center text-white/50 text-xs mb-2 animate-pulse">
+            ↔️ Scroll to see full board
+          </div>
+        )}
+
+        <div
           className="grid gap-1 sm:gap-2"
-          style={{ 
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` 
+          style={{
+            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
           }}
         >
           <AnimatePresence mode="popLayout">

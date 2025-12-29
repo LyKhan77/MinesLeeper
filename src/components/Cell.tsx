@@ -63,8 +63,8 @@ const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick,
     return colors[num] || 'text-white';
   };
 
-  // Base cell styles
-  const baseClasses = 'w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-sm sm:text-base font-bold select-none transition-all duration-200 cursor-pointer relative overflow-hidden';
+  // Base cell styles - increased size for better mobile touch targets (36px minimum)
+  const baseClasses = 'w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 flex items-center justify-center text-sm sm:text-base font-bold select-none transition-all duration-200 cursor-pointer relative overflow-hidden';
 
   // Hidden cell styles (glass effect)
   const hiddenClasses = 'bg-white/10 hover:bg-white/20 border border-white/5 hover:shadow-lg hover:shadow-white/10 hover:animate-pulse-glow';
