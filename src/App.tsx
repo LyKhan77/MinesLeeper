@@ -4,7 +4,7 @@ import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, 
 import confetti from 'canvas-confetti';
 import Board from './components/Board';
 import FlagModeButton from './components/FlagModeButton';
-import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState } from './utils/gameLogic';
+import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState, GameStatus } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
 import { useSound } from './hooks/useSound';
 import { useAchievements } from './hooks/useAchievements';
@@ -52,6 +52,7 @@ function App() {
     unlockedAchievement,
   } = useAchievements();
   const confettiTriggeredRef = useRef(false);
+  const lastSavedStatusRef = useRef<GameStatus>('idle'); // Track last saved status
 
   // Timer effect
   useEffect(() => {
@@ -68,6 +69,9 @@ function App() {
 
   // Confetti effect on win (only once per game)
   useEffect(() => {
+    // Only process stats when status actually changes (not on every render)
+    if (gameState.status === lastSavedStatusRef.current) return;
+    
     if (gameState.status === 'won' && !confettiTriggeredRef.current) {
       confettiTriggeredRef.current = true;
       
@@ -99,13 +103,17 @@ function App() {
         totalGames: playerData.stats.totalGames + 1,
         perfectGame: gameState.flagsUsed === gameState.totalMines,
       });
+      
+      lastSavedStatusRef.current = 'won';
     } else if (gameState.status === 'lost') {
       setIsTimerRunning(false);
       play('explosion');
       setTimeout(() => play('gameOver'), 500);
-      // Save loss stats
-      if (gameMode === 'classic') {
+      
+      // Save loss stats (only once)
+      if (gameMode === 'classic' && lastSavedStatusRef.current !== 'lost') {
         saveGameStats(false, difficulty, timer);
+        lastSavedStatusRef.current = 'lost';
       }
     }
   }, [gameState.status, gameMode, difficulty, timer, saveGameStats, saveDailyChallenge, challenge.completed, play, checkUnlock, playerData.stats.currentStreak, playerData.stats.totalGames, gameState.flagsUsed, gameState.totalMines]);
@@ -118,6 +126,7 @@ function App() {
     setIsTimerRunning(false);
     setMinesRevealed(false);
     confettiTriggeredRef.current = false; // Reset confetti trigger
+    lastSavedStatusRef.current = 'idle'; // Reset saved status
   }, [difficulty]);
 
   // Change difficulty
@@ -130,6 +139,7 @@ function App() {
     setIsTimerRunning(false);
     setMinesRevealed(false);
     confettiTriggeredRef.current = false; // Reset confetti trigger
+    lastSavedStatusRef.current = 'idle'; // Reset saved status
   }, []);
 
   // Handle cell click

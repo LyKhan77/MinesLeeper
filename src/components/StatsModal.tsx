@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp, Trophy, Target, Flame, Gamepad2 } from 'lucide-react';
+import { X, TrendingUp, Trophy, Target, Flame, Gamepad2, RotateCcw, Trash2 } from 'lucide-react';
 import { GameStats as GameStatsType, Difficulty } from '../types';
-import { formatTime } from '../utils/storage';
+import { formatTime, clearAllData } from '../utils/storage';
 
 interface StatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   stats: GameStatsType;
+  onReset?: () => void;
 }
 
 const difficultyLabels: Record<Difficulty, string> = {
@@ -16,8 +17,15 @@ const difficultyLabels: Record<Difficulty, string> = {
   expert: 'Expert',
 };
 
-const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats }) => {
+const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats, onReset }) => {
   const winRate = stats.totalGames > 0 ? Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
+
+  const handleReset = () => {
+    if (window.confirm('Are you sure you want to reset all statistics? This will delete all your game data including high scores and achievements.')) {
+      clearAllData();
+      window.location.reload(); // Reload to refresh data
+    }
+  };
 
   const statCards = [
     {
@@ -160,10 +168,21 @@ const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats }) => {
               )}
             </div>
 
+            {/* Reset Stats Button */}
+            <motion.button
+              onClick={handleReset}
+              className="w-full mt-4 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Trash2 className="w-4 h-4" />
+              Reset All Statistics
+            </motion.button>
+
             {/* Close Button */}
             <motion.button
               onClick={onClose}
-              className="w-full mt-6 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-semibold py-3 rounded-lg transition-all duration-200 flex-shrink-0"
+              className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-semibold py-3 rounded-lg transition-all duration-200 flex-shrink-0"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
