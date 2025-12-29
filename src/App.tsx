@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import Board from './components/Board';
 import FlagModeButton from './components/FlagModeButton';
 import GameOverAnimation from './components/GameOverAnimation';
+import NeonTitle from './components/NeonTitle';
 import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState, GameStatus } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
 import { useSound } from './hooks/useSound';
@@ -400,14 +401,7 @@ function App() {
         )}
       </AnimatePresence>
       {/* Title */}
-      <motion.h1
-        className="font-retro text-2xl sm:text-3xl md:text-4xl text-cyan-300 mb-2 text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        MinesLeeper
-      </motion.h1>
+      <NeonTitle />
       <motion.p
         className="text-white/60 text-sm mb-4"
         initial={{ opacity: 0 }}
