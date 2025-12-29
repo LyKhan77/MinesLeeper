@@ -61,22 +61,21 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
   }, [show]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <AnimatePresence>
-        {stage !== 'done' && (
-          <>
-            {/* Skip button */}
-            {showSkip && (
-              <motion.button
-                onClick={handleSkip}
-                className="fixed top-4 right-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-white/80 text-sm font-medium z-50"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                Skip Animation
-              </motion.button>
-            )}
+    <AnimatePresence>
+      {show && stage !== 'done' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          {/* Skip button */}
+          {showSkip && (
+            <motion.button
+              onClick={handleSkip}
+              className="fixed top-4 right-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-white/80 text-sm font-medium z-50"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              Skip Animation
+            </motion.button>
+          )}
 
             {/* Stage 1 & 2: Bomb appears and shakes */}
             {(stage === 'bomb' || stage === 'shake') && (
@@ -241,10 +240,9 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
                 />
               </motion.div>
             )}
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };
 
