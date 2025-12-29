@@ -22,28 +22,28 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
     // Stage 1: Bomb appears (0 - 0.6s)
     const bombTimer = setTimeout(() => {
       setStage('shake');
-      
+
       // Stage 2: Shake build-up (0.6 - 1.2s)
       const shakeTimer = setTimeout(() => {
         setStage('explode');
-        
+
         // Stage 3: Explosion (1.2 - 2.5s)
-        setTimeout(() => {
+        const explodeTimer = setTimeout(() => {
           setStage('done');
           setShowSkip(false);
-          
-          // Animation complete
-          setTimeout(() => {
-            onComplete();
-          }, 500);
+          onComplete();
         }, 1300);
-      
-      return () => clearTimeout(bombTimer);
-    }, 100);
 
-    return () => {
-      clearTimeout(bombTimer);
-    };
+        // Cleanup explode timer
+        return () => clearTimeout(explodeTimer);
+      }, 600);
+
+      // Cleanup shake timer
+      return () => clearTimeout(shakeTimer);
+    }, 600);
+
+    // Cleanup bomb timer
+    return () => clearTimeout(bombTimer);
   }, [show, onComplete]);
 
   const handleSkip = () => {
@@ -193,21 +193,15 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
                     className="text-5xl sm:text-7xl md:text-8xl font-black text-center relative"
                     animate={{
                       textShadow: [
-                        '0 0 20px rgba(251, 146, 60, 0.8)',
-                        '0 0 40px rgba(251, 146, 60, 1)',
+                        '0 0 20px rgba(251, 14, 60, 0.8)',
+                        '0 0 40px rgba(251, 14, 60, 1)',
                         '0 0 60px rgba(248, 113, 113, 1)',
-                        '0 0 80px rgba(248, 113, 113, 0.8)',
                       ],
                     }}
                     transition={{ duration: 0.5 }}
                   >
                     <span
                       className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent"
-                      style={{
-                        WebkitTextStroke: '8px #f87171',
-                        WebkitTextStrokeColor: '#f87171',
-                        paintOrder: 'stroke fill',
-                      }}
                     >
                       KAA BOOMMM!!
                     </span>
