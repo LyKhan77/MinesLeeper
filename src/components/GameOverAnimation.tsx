@@ -29,20 +29,15 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
         setStage('explode');
         
         // Stage 3: Explosion (1.2 - 2.5s)
-        const explodeTimer = setTimeout(() => {
+        setTimeout(() => {
           setStage('done');
           setShowSkip(false);
           
           // Animation complete
-          const completeTimer = setTimeout(() => {
+          setTimeout(() => {
             onComplete();
           }, 500);
-          
-          return () => clearTimeout(completeTimer);
         }, 1300);
-        
-        return () => clearTimeout(shakeTimer);
-      }, 600);
       
       return () => clearTimeout(bombTimer);
     }, 100);
