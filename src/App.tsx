@@ -4,6 +4,7 @@ import { RotateCcw, Trophy, Skull, X, HelpCircle, Bomb, User, Award, BarChart3, 
 import confetti from 'canvas-confetti';
 import Board from './components/Board';
 import FlagModeButton from './components/FlagModeButton';
+import GameOverAnimation from './components/GameOverAnimation';
 import { createEmptyBoard, revealCell, toggleFlag, chordReveal, GameState, GameStatus } from './utils/gameLogic';
 import { useLocalStorage, useDailyChallenge } from './hooks/useLocalStorage';
 import { useSound } from './hooks/useSound';
@@ -38,6 +39,7 @@ function App() {
   const [showAchievements, setShowAchievements] = useState(false);
   const [minesRevealed, setMinesRevealed] = useState(false);
   const [flagMode, setFlagMode] = useState(false);
+  const [showGameOverAnimation, setShowGameOverAnimation] = useState(false);
 
   // Custom hooks
   const { playerData, isLoaded, hasName, saveName, saveGameStats, saveDailyChallenge } = useLocalStorage();
@@ -107,6 +109,12 @@ function App() {
       lastSavedStatusRef.current = 'won';
     } else if (gameState.status === 'lost') {
       setIsTimerRunning(false);
+      
+      // Show game over animation first, then save stats after animation completes
+      if (!showGameOverAnimation) {
+        setShowGameOverAnimation(true);
+      }
+      
       play('explosion');
       setTimeout(() => play('gameOver'), 500);
       
@@ -612,6 +620,12 @@ function App() {
         achievement={unlockedAchievement}
         show={showToast}
         onHide={hideToast}
+      />
+
+      {/* Game Over Animation */}
+      <GameOverAnimation
+        show={showGameOverAnimation}
+        onComplete={() => setShowGameOverAnimation(false)}
       />
     </div>
   );
