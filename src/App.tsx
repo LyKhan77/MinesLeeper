@@ -51,6 +51,7 @@ function App() {
     hideToast,
     unlockedAchievement,
   } = useAchievements();
+  const confettiTriggeredRef = useRef(false);
 
   // Timer effect
   useEffect(() => {
@@ -65,18 +66,21 @@ function App() {
     };
   }, [isTimerRunning, gameState.status]);
 
-  // Confetti effect on win
+  // Confetti effect on win (only once per game)
   useEffect(() => {
-    if (gameState.status === 'won') {
+    if (gameState.status === 'won' && !confettiTriggeredRef.current) {
+      confettiTriggeredRef.current = true;
+      
       confetti({
-        particleCount: 50, // Reduced from 150 for subtle effect
-        spread: 45, // Reduced spread
+        particleCount: 50,
+        spread: 45,
         origin: { y: 0.6 },
         colors: ['#22d3ee', '#34d399', '#f87171', '#c084fc', '#fbbf24'],
-        gravity: 0.8, // Slightly heavier for faster fall
-        drift: 0, // No drift for more contained effect
-        scalar: 0.8, // Smaller particles
+        gravity: 0.8,
+        drift: 0,
+        scalar: 0.8,
       });
+      
       setIsTimerRunning(false);
       play('victory');
 
@@ -113,6 +117,7 @@ function App() {
     setTimer(0);
     setIsTimerRunning(false);
     setMinesRevealed(false);
+    confettiTriggeredRef.current = false; // Reset confetti trigger
   }, [difficulty]);
 
   // Change difficulty
@@ -124,6 +129,7 @@ function App() {
     setTimer(0);
     setIsTimerRunning(false);
     setMinesRevealed(false);
+    confettiTriggeredRef.current = false; // Reset confetti trigger
   }, []);
 
   // Handle cell click
