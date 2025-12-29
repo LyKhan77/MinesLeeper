@@ -167,18 +167,17 @@ const GameOverAnimation: React.FC<GameOverAnimationProps> = ({ show, onComplete 
                   {/* Zigzag motion lines */}
                   {[...Array(8)].map((_, i) => {
                     const angle = (i * 45) * (Math.PI / 180);
-                    const points = [];
+                    const points: string[] = [];
                     for (let j = 0; j < 3; j++) {
                       const r = 30 + j * 10;
-                      points.push({
-                        x: 50 + Math.cos(angle + j * 0.3) * r,
-                        y: 50 + Math.sin(angle + j * 0.3) * r,
-                      });
+                      const x = 50 + Math.cos(angle + j * 0.3) * r;
+                      const y = 50 + Math.sin(angle + j * 0.3) * r;
+                      points.push(`${x},${y}`);
                     }
                     return (
                       <polyline
                         key={i}
-                        points={points.map(p => `${p.x},${p.y}`).join(' ')}
+                        points={points.join(' ')}
                         fill="none"
                         stroke="#fb923c"
                         strokeWidth="2"
