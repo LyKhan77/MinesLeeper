@@ -91,7 +91,7 @@ export const getAchievements = (): AchievementProgress => {
     const data = localStorage.getItem(ACHIEVEMENTS_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      const achievements: Record<AchievementID, Achievement> = {};
+      const achievements: Record<AchievementID, Achievement> = {} as Record<AchievementID, Achievement>;
       let totalUnlocked = 0;
 
       // Merge with definitions
@@ -101,7 +101,7 @@ export const getAchievements = (): AchievementProgress => {
           ...def,
           unlocked: saved?.unlocked || false,
           unlockedAt: saved?.unlockedAt,
-          progress: saved?.progress || 0,
+          progress: saved?.progress || (def.maxProgress ? 0 : undefined),
         };
         if (achievements[id as AchievementID].unlocked) {
           totalUnlocked++;
