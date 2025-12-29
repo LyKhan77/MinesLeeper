@@ -69,10 +69,13 @@ function App() {
   useEffect(() => {
     if (gameState.status === 'won') {
       confetti({
-        particleCount: 150,
-        spread: 70,
+        particleCount: 50, // Reduced from 150 for subtle effect
+        spread: 45, // Reduced spread
         origin: { y: 0.6 },
         colors: ['#22d3ee', '#34d399', '#f87171', '#c084fc', '#fbbf24'],
+        gravity: 0.8, // Slightly heavier for faster fall
+        drift: 0, // No drift for more contained effect
+        scalar: 0.8, // Smaller particles
       });
       setIsTimerRunning(false);
       play('victory');
