@@ -12,7 +12,7 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({ gameState, onCellClick, onCellRightClick, onCellDoubleClick, flagMode = false }) => {
-  const { board, rows, cols, status } = gameState;
+  const { board, cols, status } = gameState;
   const prevStatusRef = useRef<GameStatus>(status);
 
   // Enhanced shake animation for loss state

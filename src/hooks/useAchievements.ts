@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getAchievements, checkAchievements, getRarityColor } from '../utils/achievements';
-import { Achievement, AchievementID, Difficulty } from '../types/achievements';
+import { Achievement, AchievementID } from '../types/achievements';
+import { Difficulty } from '../types/index';
 
 export const useAchievements = () => {
   const [achievements, setAchievements] = useState<Record<AchievementID, Achievement>>({} as Record<AchievementID, Achievement>);

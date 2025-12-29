@@ -1,5 +1,7 @@
 // Achievement types and interfaces
 
+import { Difficulty } from './index';
+
 export type AchievementID =
   | 'first_win'
   | 'speed_demon'
@@ -31,7 +33,7 @@ export interface AchievementProgress {
 
 export interface AchievementEvent {
   type: 'game_won' | 'game_lost' | 'flag_placed' | 'daily_completed';
-  difficulty?: string;
+  difficulty?: Difficulty;
   time?: number;
   flagsCorrect?: boolean;
   totalGames?: number;

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trophy, Lock, Target } from 'lucide-react';
+import { X, Trophy, Lock } from 'lucide-react';
 import { Achievement, AchievementID } from '../types/achievements';
 import { getRarityColor } from '../utils/achievements';
 

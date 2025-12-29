@@ -14,13 +14,13 @@ interface CellProps {
 const Cell: React.FC<CellProps> = ({ cell, onClick, onRightClick, onDoubleClick, flagMode = false }) => {
   const sparkleRef = useRef<HTMLDivElement>(null);
   const [longPressTriggered, setLongPressTriggered] = useState(false);
-  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
 
   // Handle long press for mobile flagging
   const handleTouchStart = (e: React.TouchEvent) => {
     if (cell.isRevealed || flagMode) return;
 
-    longPressTimerRef.current = setTimeout(() => {
+    longPressTimerRef.current = window.setTimeout(() => {
       setLongPressTriggered(true);
       onRightClick(e as any);
       if (navigator.vibrate) {

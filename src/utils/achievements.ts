@@ -1,6 +1,7 @@
 // Achievement system utilities
 
-import { Achievement, AchievementID, AchievementProgress, Difficulty } from '../types/achievements';
+import { Achievement, AchievementID, AchievementProgress } from '../types/achievements';
+import { Difficulty } from '../types/index';
 
 const ACHIEVEMENTS_KEY = 'minesleeper-achievements';
 
@@ -114,14 +115,18 @@ export const getAchievements = (): AchievementProgress => {
   }
 
   // Return default achievements
-  const achievements: Record<AchievementID, Achievement> = {} as any;
-  Object.entries(ACHIEVEMENT_DEFINITIONS).forEach(([id, def]) => {
-    achievements[id as AchievementID] = {
-      ...def,
-      unlocked: false,
-      progress: def.maxProgress ? 0 : undefined,
-    };
-  });
+  const achievements: Record<AchievementID, Achievement> = {
+    first_win: { ...ACHIEVEMENT_DEFINITIONS.first_win, unlocked: false },
+    speed_demon: { ...ACHIEVEMENT_DEFINITIONS.speed_demon, unlocked: false },
+    perfect_game: { ...ACHIEVEMENT_DEFINITIONS.perfect_game, unlocked: false },
+    marathon: { ...ACHIEVEMENT_DEFINITIONS.marathon, unlocked: false, progress: 0 },
+    bomb_squad: { ...ACHIEVEMENT_DEFINITIONS.bomb_squad, unlocked: false },
+    beginner_champion: { ...ACHIEVEMENT_DEFINITIONS.beginner_champion, unlocked: false, progress: 0 },
+    intermediate_expert: { ...ACHIEVEMENT_DEFINITIONS.intermediate_expert, unlocked: false, progress: 0 },
+    elite_miner: { ...ACHIEVEMENT_DEFINITIONS.elite_miner, unlocked: false, progress: 0 },
+    daily_warrior: { ...ACHIEVEMENT_DEFINITIONS.daily_warrior, unlocked: false, progress: 0 },
+    centurion: { ...ACHIEVEMENT_DEFINITIONS.centurion, unlocked: false, progress: 0 },
+  };
 
   return { achievements, totalUnlocked: 0 };
 };
